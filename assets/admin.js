@@ -99,6 +99,9 @@
       ? `<span class="status done">Completed</span>`
       : `<span class="status partial">Unfinished · reached page ${Math.min(p.last_page + 1, PAGES.length)}</span>`;
     const score = `${run.correct}/${TOTAL_Q}`;
+    const recovered = p.recovered
+      ? ` <span class="status partial" title="This run was saved in the test taker's browser and uploaded when they reopened the quiz.">Recovered</span>`
+      : "";
     let rows = "";
     for (const page of PAGES) {
       let pc = 0, pa = 0, pageSec = null;
@@ -115,7 +118,7 @@
     }
     return `
       <details class="run">
-        <summary>Participant #${p.id} · ${score} <span class="meta">${p.completed_at ? `${fmtPct(run.correct, TOTAL_Q)} · ${fmtMin(minutes(p))} · ` : ""}started ${fmtDate(p.started_at)}</span> ${status}</summary>
+        <summary>Participant #${p.id} · ${score} <span class="meta">${p.completed_at ? `${fmtPct(run.correct, TOTAL_Q)} · ${fmtMin(minutes(p))} · ` : ""}started ${fmtDate(p.started_at)}</span> ${status}${recovered}</summary>
         <div class="scroll"><table>
           <thead><tr><th class="label">Page</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Page score</th><th>Page time</th></tr></thead>
           <tbody>${rows}</tbody>

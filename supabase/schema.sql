@@ -100,6 +100,47 @@ begin
   where token = p_token and completed_at is null;
 end $$;
 
+-- Recovery: uploads a run that was saved only in a test taker's browser
+-- (e.g. they loaded an old cached copy of the site). Marked recovered = true.
+alter table public.participants add column if not exists recovered boolean not null default false;
+
+create or replace function public.import_offline_run(p_started_at timestamptz, p_completed_at timestamptz, p_user_agent text, p_answers jsonb)
+returns table (participant_number bigint, participant_token uuid)
+language plpgsql security definer set search_path = public as $$
+declare
+  pid    bigint;
+  tok    uuid;
+  a      jsonb;
+  v_last int := 0;
+begin
+  if p_started_at is null or p_started_at > now() + interval '5 minutes' or p_started_at < now() - interval '60 days' then
+    raise exception 'Invalid start time';
+  end if;
+  if p_completed_at is not null and (p_completed_at < p_started_at or p_completed_at > now() + interval '5 minutes') then
+    raise exception 'Invalid finish time';
+  end if;
+  if jsonb_array_length(p_answers) > 32 then raise exception 'Too many answers'; end if;
+
+  insert into public.participants (started_at, completed_at, user_agent, recovered)
+  values (p_started_at, p_completed_at, left(p_user_agent, 300), true)
+  returning id, token into pid, tok;
+
+  for a in select * from jsonb_array_elements(p_answers) loop
+    insert into public.responses (participant_id, page, question, choice, seconds_to_answer, page_seconds, saved_at)
+    values (pid, (a->>'page')::int, (a->>'question')::int, a->>'choice',
+            (a->>'seconds')::numeric, (a->>'page_seconds')::numeric,
+            coalesce((a->>'saved_at')::timestamptz, now()))
+    on conflict (participant_id, page, question) do nothing;
+    v_last := greatest(v_last, (a->>'page')::int);
+  end loop;
+
+  update public.participants set last_page = v_last where id = pid;
+  return query select pid, tok;
+end $$;
+
+revoke all on function public.import_offline_run(timestamptz, timestamptz, text, jsonb) from public;
+grant execute on function public.import_offline_run(timestamptz, timestamptz, text, jsonb) to anon, authenticated;
+
 revoke all on function public.start_quiz(text)                      from public;
 revoke all on function public.save_page(uuid, int, jsonb, numeric)  from public;
 revoke all on function public.finish_quiz(uuid)                     from public;

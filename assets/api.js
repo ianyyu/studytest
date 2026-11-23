@@ -3,6 +3,10 @@
 (function () {
   const cfg = window.QUIZ_CONFIG || {};
   const useSupabase = !!(cfg.SUPABASE_URL && cfg.SUPABASE_ANON_KEY);
+  // Demo mode is only for previewing on your own computer. On the live site a
+  // missing config must never silently keep answers in the visitor's browser.
+  const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) || location.protocol === "file:";
+  const DEMO_DB = "studytest-demo-db";
 
   // ── Supabase backend ────────────────────────────────────────────────
   function supabaseApi() {
@@ -40,6 +44,40 @@
         const { error } = await sb.rpc("finish_quiz", { p_token: token });
         if (error) throw error;
       },
+      // Runs saved only in this browser (from an old cached copy of the site).
+      offlineRuns() {
+        try {
+          const db = JSON.parse(localStorage.getItem(DEMO_DB));
+          if (!db || !Array.isArray(db.participants)) return [];
+          return db.participants
+            .map((p) => ({ p, answers: (db.responses || []).filter((r) => r.participant_id === p.id) }));
+        } catch { return []; }
+      },
+      async importOfflineRun(run) {
+        const { data, error } = await sb.rpc("import_offline_run", {
+          p_started_at: run.p.started_at,
+          p_completed_at: run.p.completed_at || null,
+          p_user_agent: run.p.user_agent || navigator.userAgent,
+          p_answers: run.answers.map((r) => ({
+            page: r.page, question: r.question, choice: r.choice,
+            seconds: r.seconds_to_answer, page_seconds: r.page_seconds, saved_at: r.saved_at,
+          })),
+        });
+        if (error) throw error;
+        const row = Array.isArray(data) ? data[0] : data;
+        return { number: row.participant_number, token: row.participant_token };
+      },
+      clearOfflineRun(token) {
+        try {
+          const db = JSON.parse(localStorage.getItem(DEMO_DB));
+          if (!db) return;
+          const p = db.participants.find((x) => x.token === token);
+          db.participants = db.participants.filter((x) => x.token !== token);
+          if (p) db.responses = (db.responses || []).filter((r) => r.participant_id !== p.id);
+          if (db.participants.length) localStorage.setItem(DEMO_DB, JSON.stringify(db));
+          else localStorage.removeItem(DEMO_DB);
+        } catch {}
+      },
       async signIn(password) {
         const { error } = await sb.auth.signInWithPassword({ email: cfg.ADMIN_EMAIL, password });
         if (error) throw new Error(/invalid/i.test(error.message) ? "Wrong password." : error.message);
@@ -71,7 +109,7 @@
 
   // ── Demo backend (localStorage) ─────────────────────────────────────
   function demoApi() {
-    const DB = "studytest-demo-db";
+    const DB = DEMO_DB;
     const read = () => {
       try { return JSON.parse(localStorage.getItem(DB)) || { participants: [], responses: [] }; }
       catch { return { participants: [], responses: [] }; }
@@ -129,5 +167,16 @@
     };
   }
 
-  window.QuizApi = useSupabase ? supabaseApi() : demoApi();
+  // Live site with no config: fail loudly instead of falling back to demo mode.
+  function unconfiguredApi() {
+    const fail = async () => { throw new Error("The quiz isn't connected to its database yet."); };
+    return {
+      demo: false, unconfigured: true,
+      startQuiz: fail, savePage: fail, finishQuiz: fail,
+      signIn: fail, signOut: async () => {}, isSignedIn: async () => false,
+      loadAll: fail, deleteParticipant: fail,
+    };
+  }
+
+  window.QuizApi = useSupabase ? supabaseApi() : isLocal ? demoApi() : unconfiguredApi();
 })();

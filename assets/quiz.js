@@ -161,13 +161,43 @@
     show("screen-intro");
   }
 
+  // ── Recovery ────────────────────────────────────────────────────────
+  // If this browser ran the quiz from an old cached copy of the site (demo
+  // mode), its answers are still in localStorage. Upload them now.
+  async function recoverOfflineRuns() {
+    if (api.demo || !api.offlineRuns) return;
+    for (const run of api.offlineRuns()) {
+      const isMine = state && state.token === run.p.token;
+      if (!run.answers.length) {
+        // Started but never answered anything: nothing to recover.
+        api.clearOfflineRun(run.p.token);
+        if (isMine) clearState();
+        continue;
+      }
+      try {
+        const { number, token } = await api.importOfflineRun(run);
+        api.clearOfflineRun(run.p.token);
+        if (isMine) {
+          state.number = number;
+          state.token = token;
+          state.finished = !!run.p.completed_at;
+          saveState();
+        }
+      } catch (e) {
+        console.error("Could not recover saved answers; will retry next visit.", e);
+      }
+    }
+  }
+
   // ── Boot ────────────────────────────────────────────────────────────
   if (api.demo) $("demo-banner").classList.remove("hidden");
   $("start-btn").addEventListener("click", start);
   $("quiz-form").addEventListener("submit", next);
   $("reset-btn").addEventListener("click", () => { clearState(); renderIntro(); });
 
-  if (!state) renderIntro();
-  else if (state.finished) renderDone();
-  else renderPage();
+  recoverOfflineRuns().finally(() => {
+    if (!state) renderIntro();
+    else if (state.finished) renderDone();
+    else renderPage();
+  });
 })();
