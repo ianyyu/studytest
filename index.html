@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study Quiz</title>
+  <link rel="stylesheet" href="assets/style.css?v=3">
+</head>
+<body class="quiz-page">
+  <div id="demo-banner" class="banner hidden">Demo mode: answers are saved in this browser only. Add your Supabase keys in assets/config.js to collect real results.</div>
+
+  <header class="topbar">
+    <div class="wrap">
+      <span class="label" id="progress-label">Instructions</span>
+      <div class="progress" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0">
+        <div id="progress-fill"></div>
+      </div>
+      <span class="label" id="participant-label"></span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Instructions -->
+    <section id="screen-intro" class="card intro">
+      <h1>Welcome, and thank you for taking part</h1>
+      <p>This is a short multiple-choice quiz. Please read these instructions before you begin.</p>
+      <div class="facts">
+        <div class="fact"><b>8</b>pages</div>
+        <div class="fact"><b>4</b>questions per page</div>
+        <div class="fact"><b>~10</b>minutes</div>
+      </div>
+      <ol>
+        <li>Each page has four questions. Pick <strong>one</strong> answer for each.</li>
+        <li>Answer all four questions to unlock the <strong>Next</strong> button.</li>
+        <li>You can change an answer while you're on the page, but once you go to the next page you <strong>can't go back</strong>.</li>
+        <li>Please work on your own and don't look anything up. If you aren't sure, pick your best guess.</li>
+        <li>When you click <strong>Start</strong>, you get a participant number. It shows at the top of the page.</li>
+      </ol>
+      <p class="muted">Your answers and the time you take are recorded. No name or email is collected.</p>
+      <div class="actions">
+        <span class="hint">The bar at the top shows your progress.</span>
+        <button class="btn" id="start-btn">Start</button>
+      </div>
+      <div class="error hidden" id="start-error"></div>
+    </section>
+
+    <!-- Question page -->
+    <section id="screen-quiz" class="hidden">
+      <form id="quiz-form" class="card" novalidate>
+        <h2 id="page-title"></h2>
+        <div id="questions"></div>
+        <div class="actions">
+          <span class="hint" id="answered-hint"></span>
+          <button class="btn" id="next-btn" type="submit" disabled>Next</button>
+        </div>
+        <div class="error hidden" id="save-error"></div>
+      </form>
+    </section>
+
+    <!-- Finished -->
+    <section id="screen-done" class="card done hidden">
+      <h1>All done, thank you!</h1>
+      <p class="muted">Your answers have been submitted. Your participant number is</p>
+      <div class="badge-num" id="done-number"></div>
+      <p class="muted">You can close this tab now.</p>
+      <p style="margin-top:28px"><button class="btn secondary small" id="reset-btn" type="button">Start over for a new test taker on this device</button></p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="assets/config.js?v=3"></script>
+  <script src="assets/questions.js?v=3"></script>
+  <script src="assets/api.js?v=3"></script>
+  <script src="assets/quiz.js?v=3"></script>
+</body>
+</html>

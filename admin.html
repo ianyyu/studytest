@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Quiz Results</title>
+  <link rel="stylesheet" href="assets/style.css?v=3">
+  <style>
+    .admin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 24px 0 4px; }
+    .admin-head h1 { margin: 0; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .toolbar label { font-size: 13px; color: var(--muted); display: flex; gap: 6px; align-items: center; margin-right: 6px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0; }
+    .chip { padding: 12px 14px; background: var(--accent-soft); border-radius: 8px; font-size: 14px; }
+    .chip b { font-size: 15px; }
+    section { margin-top: 32px; }
+    .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { border-collapse: collapse; width: 100%; font-size: 13px; background: var(--surface); }
+    th, td { padding: 8px; text-align: center; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    th { font-size: 11px; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); font-weight: 600; }
+    td.label, th.label { text-align: left; font-weight: 600; }
+    .cell { display: block; padding: 6px; border-radius: 5px; font-weight: 600; min-width: 48px; color: #1c2333; }
+    .cell small { display: block; font-size: 11px; font-weight: 500; opacity: .75; margin-top: 2px; }
+    .cell.empty { background: var(--track); color: var(--muted); }
+    .ans { display: inline-block; min-width: 54px; padding: 5px 8px; border-radius: 5px; font-weight: 600; }
+    .ans.ok { background: var(--good-bg); color: var(--good-text); }
+    .ans.no { background: var(--bad-bg); color: var(--bad-text); }
+    .ans.none { background: var(--track); color: var(--muted); }
+    .ans small { display: block; font-size: 11px; font-weight: 500; opacity: .8; }
+    .total { background: var(--accent-soft); font-weight: 600; }
+    details.run { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-top: 10px; }
+    details.run summary { cursor: pointer; font-size: 15px; font-weight: 600; display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+    details.run summary .meta { font-weight: 400; color: var(--muted); font-size: 13px; }
+    details.run[open] summary { margin-bottom: 10px; }
+    .status { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; }
+    .status.done { background: var(--good-bg); color: var(--good-text); }
+    .status.partial { background: var(--warn-bg); color: var(--warn-text); }
+    .run-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+    .qtext { white-space: normal; text-align: left; min-width: 220px; max-width: 420px; font-size: 12px; color: var(--muted); }
+    .empty-state { padding: 32px; text-align: center; color: var(--muted); background: var(--surface); border: 1px dashed var(--border); border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <div id="demo-banner" class="banner hidden">Demo mode: showing results saved in this browser only. Any password signs in until Supabase is connected.</div>
+
+  <!-- Login -->
+  <main id="login-view" class="wrap hidden">
+    <form id="login-form" class="card login">
+      <h1>Admin sign in</h1>
+      <p class="muted">Enter the admin password to see everyone's scores.</p>
+      <input type="text" name="username" value="admin" autocomplete="username" hidden>
+      <label class="field"><span>Password</span><input type="password" id="password" autocomplete="current-password" required></label>
+      <button class="btn" type="submit" id="login-btn" style="width:100%">Sign in</button>
+      <div class="error hidden" id="login-error"></div>
+    </form>
+  </main>
+
+  <!-- Dashboard -->
+  <main id="dash-view" class="wrap wide hidden" style="padding-top:0">
+    <div class="admin-head">
+      <h1>Quiz results</h1>
+      <div class="toolbar">
+        <label><input type="checkbox" id="include-partial"> Include unfinished in averages</label>
+        <button class="btn small secondary" id="refresh-btn">Refresh</button>
+        <button class="btn small secondary" id="csv-btn">Download CSV</button>
+        <button class="btn small secondary" id="logout-btn">Sign out</button>
+      </div>
+    </div>
+    <p class="muted" id="signed-in-as" style="margin-top:6px"></p>
+    <div class="error hidden" id="load-error"></div>
+
+    <div class="chips" id="chips"></div>
+    <p class="muted" style="font-size:13px">Accuracy = correct / answered. Time = seconds from opening a page to the final answer choice.</p>
+
+    <section>
+      <h2>1. Accuracy by question</h2>
+      <div class="scroll"><table id="question-table"></table></div>
+    </section>
+
+    <section>
+      <h2>2. Individual test takers</h2>
+      <div id="runs"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="assets/config.js?v=3"></script>
+  <script src="assets/questions.js?v=3"></script>
+  <script src="private/answer-key.js" onerror="void 0"></script>
+  <script src="assets/api.js?v=3"></script>
+  <script src="assets/admin.js?v=3"></script>
+</body>
+</html>

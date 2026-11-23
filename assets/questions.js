@@ -1,0 +1,112 @@
+// Quiz content. Correct answers are NOT stored here (this file is public);
+// they live in the Supabase `answer_key` table, which only admins can read.
+window.QUIZ_PAGES = [
+  {
+    page: 1,
+    questions: [
+      { q: "Which waves in the figure travel back up to the hydrophones after striking something underground?",
+        options: { A: "Refracted wave", B: "Pressure waves", C: "Surface waves", D: "Reflected waves" } },
+      { q: "Which substance is shown immediately above the oil?",
+        options: { A: "Water", B: "Sand", C: "Gas", D: "Solid rock" } },
+      { q: "What type of rock lies directly beneath the seabed?",
+        options: { A: "Impermeable rock", B: "Porous rock", C: "Sedimentary rock", D: "Granite rock" } },
+      { q: "What is the separate rock on the lower-right, away from the oil?",
+        options: { A: "Impermeable rock", B: "Porous rock", C: "Sedimentary rock", D: "Bedrock" } },
+    ],
+  },
+  {
+    page: 2,
+    questions: [
+      { q: "During training, how do the two models behave?",
+        options: { A: "They train independently", B: "They train one after another", C: "They compete", D: "They learn together" } },
+      { q: "According to the figure, what happens when one sensor goes offline?",
+        options: { A: "The whole system fails", B: "Both sensors restart", C: "One model can still make robust predictions", D: "A human takes over" } },
+      { q: "What object is shown between the two robots in each panel?",
+        options: { A: "A satellite", B: "A clock", C: "A camera", D: "The Earth" } },
+      { q: "Each robot is connected to a different sensor. What sensor does the left robot use?",
+        options: { A: "A camera", B: "A satellite/radar dish", C: "A microphone", D: "A thermometer" } },
+    ],
+  },
+  {
+    page: 3,
+    questions: [
+      { q: "Who or what provides input to both systems in the figure?",
+        options: { A: "An automated agent", B: "The end user", C: "A shared database", D: "A human domain expert" } },
+      { q: "How does the figure group neighborhood generation and data operations?",
+        options: {
+          A: "Neighborhood generation is under scenario constraints, and data operations are under data structure.",
+          B: "Neighborhood generation is under data structure, and data operations are under scenario constraints.",
+          C: "Both are under scenario constraints.",
+          D: "Both are under data structure." } },
+      { q: "What flows back and forth between the two systems in the figure?",
+        options: { A: "Data operations and constraints", B: "Predictions and explanations", C: "Training labels", D: "User feedback" } },
+      { q: "What are the two connected systems in the figure?",
+        options: { A: "A database and a server", B: "Training and inference engines", C: "A client and a host", D: "Machine Learning (ML) and Explainable AI (XAI)" } },
+    ],
+  },
+  {
+    page: 4,
+    questions: [
+      { q: "What two sets does FOR-SID produce from the user's examples?",
+        options: { A: "A training set and a test set", B: "A clean set and an error log", C: "A forget set and a retain set", D: "An input set and an output set" } },
+      { q: "What is the end result of the FOR-SID process?",
+        options: { A: "The model is deleted entirely", B: "The user's data is encrypted and stored", C: "The machine forgets the unwanted data while still performing properly", D: "The model is retrained from scratch" } },
+      { q: "What does the user ask for at the start of the process?",
+        options: { A: "To have their data removed from the AI model", B: "To train a new model", C: "To see the model's predictions", D: "To make the AI run faster" } },
+      { q: "What does the FOR-SID box take in to work on?",
+        options: { A: "The user's example images", B: "The trained AI model", C: "A list of GDPR rules", D: "The retain set" } },
+    ],
+  },
+  {
+    page: 5,
+    questions: [
+      { q: "In the figure, the attribute labeled S stands for what?",
+        options: { A: "The target", B: "The bias", C: "The signal", D: "The score" } },
+      { q: "What happens to S during the encoding step?",
+        options: { A: "It is removed", B: "It is kept", C: "It is strengthened", D: "It becomes the target" } },
+      { q: "What is the starting data called, before encoding?",
+        options: { A: "Input X", B: "Representation Z", C: "Target Y", D: "Bias S" } },
+      { q: "What is the encoded result called?",
+        options: { A: "Input X", B: "Encoding", C: "Representation Z", D: "Bias S" } },
+    ],
+  },
+  {
+    page: 6,
+    questions: [
+      { q: "Under LAFT, how is the patterned circle classified?",
+        options: { A: "Removed from the data", B: "As an anomaly", C: "It is not classified", D: "As normal" } },
+      { q: "What criterion does LAFT use to decide what is normal?",
+        options: { A: "Color", B: "Shape", C: "Size", D: "Pattern" } },
+      { q: "Under typical detection, what is the TRIANGLE classified as?",
+        options: { A: "As an anomaly", B: "As normal", C: "Both an anomaly and normal", D: "It is not classified" } },
+      { q: "Under typical detection, what is the HEXAGON classified as?",
+        options: { A: "As an anomaly", B: "As normal", C: "Both an anomaly and normal", D: "It is not classified" } },
+    ],
+  },
+  {
+    page: 7,
+    questions: [
+      { q: "What does the original text consist of?",
+        options: { A: "Watermarked text and non-watermarked text", B: "Machine paraphrased text and human paraphrased text", C: "Watermarked text and machine paraphrased text", D: "Watermarked text and human paraphrased text" } },
+      { q: "Which method is described as most effective at reducing watermark strength?",
+        options: { A: "Machine paraphrasing", B: "Human paraphrasing", C: "Text mixing", D: "They are all equal" } },
+      { q: "In the Text Mixing panel, most of the blocks are made up of what?",
+        options: { A: "Watermarked text", B: "Text copied in from other documents", C: "Plain original text", D: "Encrypted text" } },
+      { q: "Which panel describes a method that tends to shorten spans of watermarked text?",
+        options: { A: "Machine Paraphrasing", B: "Human Paraphrasing", C: "Text Mixing", D: "Translation Round-Trips" } },
+    ],
+  },
+  {
+    page: 8,
+    questions: [
+      { q: "In panel (a), what does the guide learn to do in the controlled environment?",
+        options: { A: "Reach a goal", B: "Create disturbances", C: "Navigate around obstacles safely", D: "Follow the student" } },
+      { q: "In panel (b), what does the guide's training enable the student to do?",
+        options: { A: "Navigate safely toward its goal despite obstacles", B: "Practice safe navigation without pursuing a goal", C: "Take control whenever the guide makes a dangerous move", D: "Create action disturbances for the guide to overcome" } },
+      { q: "In panel (a), what does the guide have to cope with as it moves?",
+        options: { A: "Rain", B: "Wind", C: "Friction", D: "Sound waves" } },
+      { q: "In panel (b), how does the guide help keep the student safe?",
+        options: { A: "By removing all obstacles", B: "By taking over and steering", C: "By carrying the student", D: "By setting the goal" } },
+    ],
+  },
+];
