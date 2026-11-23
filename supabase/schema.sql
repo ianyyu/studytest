@@ -45,6 +45,11 @@ language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.admins where lower(email) = lower(auth.jwt() ->> 'email'));
 $$;
 
+-- Table access for signed-in users; the policies below still limit it to admins.
+-- (Newer Supabase projects don't grant this by default.)
+grant select, delete on public.participants to authenticated;
+grant select on public.responses, public.answer_key to authenticated;
+
 drop policy if exists "admin read participants" on public.participants;
 create policy "admin read participants" on public.participants for select to authenticated using (public.is_admin());
 drop policy if exists "admin delete participants" on public.participants;
